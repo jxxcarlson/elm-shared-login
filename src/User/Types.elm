@@ -20,7 +20,7 @@ type alias User =
 
 
 type Msg
-    = SetFavorite String
-    | ProcessAuthentication (Result Http.Error User)
+    = ProcessAuthentication (Result Http.Error User)
+    | SetFavorite String
     | SetSecret String
     | NavigateTo Route

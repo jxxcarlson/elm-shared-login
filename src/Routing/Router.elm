@@ -1,4 +1,4 @@
-module Routing.Router exposing (Model, Msg(..), initialModel, init, pageView, update, updateHome, updateSettings, view)
+module Routing.Router exposing (Model, Msg(..), initialModel, init, pageView, update, updateHome, updateCurrentUser, view)
 
 import Browser
 import Browser.Navigation exposing (Key)
@@ -12,6 +12,7 @@ import Element exposing (..)
 import Element.Font as Font
 import Element.Input as Input
 import Common.Style as Style
+import User.Types
 
 
 type alias Model =
@@ -19,6 +20,13 @@ type alias Model =
     , currentUserModel : CurrentUser.Model
     , route : Route
     }
+
+
+type Msg
+    = UrlChange Url
+    | HomeMsg Home.Msg
+    | CurrentUserMsg User.Types.Msg
+    | NavigateTo Route
 
 
 initialModel : Url -> Model
@@ -71,8 +79,8 @@ update sharedState msg model =
         HomeMsg homeMsg ->
             updateHome model homeMsg
 
-        SettingsMsg settingsMsg ->
-            updateSettings sharedState model settingsMsg
+        CurrentUserMsg currentUserMsg ->
+            updateCurrentUser sharedState model currentUserMsg
 
 
 updateHome : Model -> Home.Msg -> ( Model, Cmd Msg, SharedStateUpdate )
@@ -87,14 +95,14 @@ updateHome model homeMsg =
         )
 
 
-updateSettings : SharedState -> Model -> CurrentUser.Msg -> ( Model, Cmd Msg, SharedStateUpdate )
-updateSettings sharedState model settingsMsg =
+updateCurrentUser : SharedState -> Model -> User.Types.Msg -> ( Model, Cmd Msg, SharedStateUpdate )
+updateCurrentUser sharedState model settingsMsg =
     let
         ( nextSettingsModel, settingsCmd, sharedStateUpdate ) =
             CurrentUser.update sharedState settingsMsg model.currentUserModel
     in
         ( { model | currentUserModel = nextSettingsModel }
-        , Cmd.map SettingsMsg settingsCmd
+        , Cmd.map CurrentUserMsg settingsCmd
         , sharedStateUpdate
         )
 
@@ -146,7 +154,7 @@ pageView sharedState model =
 
             SettingsRoute ->
                 CurrentUser.view sharedState model.currentUserModel
-                    |> Element.map SettingsMsg
+                    |> Element.map CurrentUserMsg
 
             NotFoundRoute ->
                 el [] (text "404 :(")
