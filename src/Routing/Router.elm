@@ -134,14 +134,14 @@ view msgMapper sharedState model =
                         }
                     , Input.button (Style.activeButton (model.route == SettingsRoute))
                         { onPress = Just (NavigateTo SettingsRoute)
-                        , label = el [] (text "Sign in page")
+                        , label = el [] (text "Sign in")
                         }
                     ]
                 , pageView sharedState model
                 ]
     in
         { title = "Elm Shared State Demo"
-        , body = body_ |> Element.layout [] |> Html.map msgMapper |> \x -> [ x ]
+        , body = body_ |> Element.layoutWith { options = [ Style.myFocusStyle ] } [] |> Html.map msgMapper |> \x -> [ x ]
         }
 
 

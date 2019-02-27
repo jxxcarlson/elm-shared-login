@@ -11,6 +11,7 @@ import Browser.Navigation exposing (pushUrl)
 import Routing.Helpers exposing (Route(..), reverseRoute)
 import SharedState exposing (SharedState, SharedStateUpdate(..))
 import Time
+import Http exposing (Error(..))
 import Element exposing (..)
 import Element.Font as Font
 import Element.Input as Input
@@ -117,7 +118,7 @@ update sharedState msg model =
             )
 
         AcceptRegistration (Err err) ->
-            ( { model | message = "Hmm ... something went wrong", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
+            ( { model | message = httpErrorExplanation err, state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
 
         NavigateTo route ->
             ( model, pushUrl sharedState.navKey (reverseRoute route), NoUpdate )
@@ -295,3 +296,43 @@ userStatus user_ =
 
         Just user ->
             el [] (text <| user.username ++ ", you are now signed in.")
+
+
+type Error
+    = BadUrl String
+    | Timeout
+    | NetworkError
+    | BadStatus Int
+    | BadBody String
+
+
+httpErrorExplanation : Http.Error -> String
+httpErrorExplanation error =
+    case error of
+        Http.BadUrl str ->
+            str
+
+        Http.Timeout ->
+            "Timeout (error)"
+
+        Http.NetworkError ->
+            "Network error"
+
+        Http.BadStatus status ->
+            "Bad status: " ++ String.fromInt status
+
+        Http.BadBody str ->
+            cleanupErrorMessage str
+
+
+cleanupErrorMessage : String -> String
+cleanupErrorMessage str =
+    str
+        |> String.lines
+        |> List.filter (\x -> String.contains "message" x)
+        |> List.head
+        |> Maybe.withDefault ""
+        |> String.trim
+        |> String.replace "message" ""
+        |> String.replace "\"" ""
+        |> String.dropLeft 1

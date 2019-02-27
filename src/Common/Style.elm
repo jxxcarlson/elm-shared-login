@@ -10,6 +10,7 @@ module Common.Style
         , footer
         , footerItem
         , navBar
+        , myFocusStyle
         )
 
 import Element exposing (..)
@@ -44,7 +45,7 @@ shadedColumn w h =
 
 
 navBar w =
-    [ spacing 24, Background.color grey, paddingXY 12 8, width w ]
+    [ spacing 24, Background.color charcoal, paddingXY 12 8, width w ]
 
 
 footer =
@@ -75,6 +76,10 @@ preWrap =
 
 buttonFontSize =
     Font.size 16
+
+
+myFocusStyle =
+    focusStyle { borderColor = Nothing, backgroundColor = Nothing, shadow = Nothing }
 
 
 
@@ -122,7 +127,7 @@ white =
 
 
 black =
-    Element.rgb 0.3 0.3 0.3
+    Element.rgb 0.1 0.1 0.1
 
 
 mouseOverColor =
