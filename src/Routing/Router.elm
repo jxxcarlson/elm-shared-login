@@ -127,7 +127,7 @@ view msgMapper sharedState model =
                 [ el [ paddingXY 0 20, Font.bold ]
                     (text "Login Demo with Shared State")
                 , row
-                    Style.navBar
+                    (Style.navBar (px 480))
                     [ Input.button (Style.activeButton (model.route == HomeRoute))
                         { onPress = Just (NavigateTo HomeRoute)
                         , label = el [] (text "Home")

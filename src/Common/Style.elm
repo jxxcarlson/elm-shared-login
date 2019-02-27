@@ -6,6 +6,7 @@ module Common.Style
         , noAutocorrect
         , preWrap
         , mainColumn
+        , shadedColumn
         , footer
         , footerItem
         , navBar
@@ -38,8 +39,12 @@ mainColumn =
     [ paddingXY 0 40, spacing 24, height (px 700) ]
 
 
-navBar =
-    [ spacing 24, Background.color grey, paddingXY 12 8 ]
+shadedColumn w h =
+    [ paddingXY 24 24, spacing 24, Background.color lightBlue, width w, height h ]
+
+
+navBar w =
+    [ spacing 24, Background.color grey, paddingXY 12 8, width w ]
 
 
 footer =
@@ -87,7 +92,7 @@ basicButtonsStyle =
 
 activeButtonStyle : List (Element.Attr () msg)
 activeButtonStyle =
-    [ Background.color darkRed, Font.color white, Element.paddingXY 10 6 ] ++ basicButtonsStyle
+    [ Background.color darkBlue, Font.color white, Element.paddingXY 10 6 ] ++ basicButtonsStyle
 
 
 
@@ -128,5 +133,13 @@ mouseDownColor =
     Element.rgb 0.7 0.1 0.1
 
 
+lightBlue =
+    Element.rgb 0.8 0.8 0.9
+
+
 blue =
     Element.rgb 0.15 0.15 1.0
+
+
+darkBlue =
+    Element.rgb 0.0 0.0 0.6

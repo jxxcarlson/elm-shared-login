@@ -66,7 +66,16 @@ update sharedState msg model =
             ( { model | message = "" }, Session.authenticate model.email model.password, NoUpdate )
 
         SignOut ->
-            ( { model | message = "", state = NotSignedIn }, Cmd.none, InvalidateCurrentUser )
+            ( { model
+                | message = ""
+                , username = ""
+                , email = ""
+                , password = ""
+                , state = NotSignedIn
+              }
+            , Cmd.none
+            , InvalidateCurrentUser
+            )
 
         Register ->
             ( { model | message = "", state = Registering }, Cmd.none, NoUpdate )
@@ -74,17 +83,38 @@ update sharedState msg model =
         CancelRegistration ->
             ( { model | message = "", state = NotSignedIn }, Cmd.none, NoUpdate )
 
+        CancelSignin ->
+            ( { model | message = "", state = NotSignedIn }, Cmd.none, NoUpdate )
+
         SubmitRegistration ->
             ( { model | message = "", state = Registering }, Session.registerUser model.username model.email model.password, NoUpdate )
 
         ProcessAuthentication (Ok user) ->
-            ( { model | message = "Success! Welcome " ++ user.username ++ ".", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
+            ( { model
+                | message = "Success! Welcome " ++ user.username ++ "."
+                , username = ""
+                , email = ""
+                , password = ""
+                , state = SignedIn
+              }
+            , Cmd.none
+            , UpdateCurrentUser (Just user)
+            )
 
         ProcessAuthentication (Err err) ->
             ( { model | message = "Invalid password or username", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
 
         AcceptRegistration (Ok user) ->
-            ( { model | message = "Success! Welcome " ++ user.username ++ ".", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
+            ( { model
+                | message = "Success! Welcome " ++ user.username ++ "."
+                , username = ""
+                , email = ""
+                , password = ""
+                , state = SignedIn
+              }
+            , Cmd.none
+            , UpdateCurrentUser (Just user)
+            )
 
         AcceptRegistration (Err err) ->
             ( { model | message = "Hmm ... something went wrong", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
@@ -96,12 +126,13 @@ update sharedState msg model =
 view : SharedState -> Model -> Element Msg
 view sharedState model =
     column Style.mainColumn
-        [ el [ Font.size 24, Font.bold ] (text "Sign in")
-        , showIf (model.state /= SignedIn) (inputUsername model)
-        , showIf (model.state /= SignedIn) (inputEmail model)
-        , showIf (model.state /= SignedIn) (inputPassword model)
-        , row [ spacing 12 ] [ signInOrCancelButton model, registerButton model ]
-        , el [ Font.size 18 ] (text model.message)
+        [ column (Style.shadedColumn (px 480) (px 300))
+            [ showIf (model.state /= SignedIn) (inputUsername model)
+            , showIf (model.state /= SignedIn) (inputEmail model)
+            , showIf (model.state /= SignedIn) (inputPassword model)
+            , row [ spacing 12 ] [ signInOrCancelButton model, registerButton model ]
+            , el [ Font.size 18 ] (text model.message)
+            ]
         , footer sharedState model
         ]
 
@@ -191,13 +222,20 @@ cancelRegistrationButton =
         }
 
 
+cancelSignInButton =
+    Input.button Style.button
+        { onPress = Just CancelSignin
+        , label = el [] (text "Cancel")
+        }
+
+
 registerButton model =
     case model.state of
         NotSignedIn ->
             registerButton_
 
         SigningIn ->
-            Element.none
+            cancelSignInButton
 
         Registering ->
             submitRegistrationButton

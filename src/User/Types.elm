@@ -30,4 +30,5 @@ type Msg
     | SignOut
     | Register
     | CancelRegistration
+    | CancelSignin
     | SubmitRegistration
