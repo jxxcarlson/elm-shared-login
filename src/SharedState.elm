@@ -16,6 +16,7 @@ type SharedStateUpdate
     = NoUpdate
     | UpdateTime Posix
     | UpdateCurrentUser (Maybe User)
+    | InvalidateCurrentUser
 
 
 initialSharedState : Browser.Navigation.Key -> Posix -> SharedState
@@ -34,6 +35,9 @@ update sharedState sharedStateUpdate =
 
         UpdateCurrentUser currentUser ->
             { sharedState | currentUser = currentUser }
+
+        InvalidateCurrentUser ->
+            { sharedState | currentUser = Nothing }
 
         NoUpdate ->
             sharedState

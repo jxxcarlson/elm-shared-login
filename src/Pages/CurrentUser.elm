@@ -24,6 +24,7 @@ type alias Model =
     { message : String
     , email : String
     , password : String
+    , username : String
     , state : State
     }
 
@@ -38,6 +39,7 @@ type State
 initModel : Model
 initModel =
     { message = ""
+    , username = ""
     , email = ""
     , password = ""
     , state = NotSignedIn
@@ -57,14 +59,35 @@ update sharedState msg model =
         AcceptPassword str ->
             ( { model | password = str }, Cmd.none, NoUpdate )
 
+        AcceptUsername str ->
+            ( { model | username = str }, Cmd.none, NoUpdate )
+
         SignIn ->
             ( { model | message = "" }, Session.authenticate model.email model.password, NoUpdate )
 
+        SignOut ->
+            ( { model | message = "", state = NotSignedIn }, Cmd.none, InvalidateCurrentUser )
+
+        Register ->
+            ( { model | message = "", state = Registering }, Cmd.none, NoUpdate )
+
+        CancelRegistration ->
+            ( { model | message = "", state = NotSignedIn }, Cmd.none, NoUpdate )
+
+        SubmitRegistration ->
+            ( { model | message = "", state = Registering }, Session.registerUser model.username model.email model.password, NoUpdate )
+
         ProcessAuthentication (Ok user) ->
-            ( { model | message = "Login successful", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
+            ( { model | message = "Success! Welcome " ++ user.username ++ ".", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
 
         ProcessAuthentication (Err err) ->
             ( { model | message = "Invalid password or username", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
+
+        AcceptRegistration (Ok user) ->
+            ( { model | message = "Success! Welcome " ++ user.username ++ ".", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
+
+        AcceptRegistration (Err err) ->
+            ( { model | message = "Hmm ... something went wrong", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
 
         NavigateTo route ->
             ( model, pushUrl sharedState.navKey (reverseRoute route), NoUpdate )
@@ -74,9 +97,10 @@ view : SharedState -> Model -> Element Msg
 view sharedState model =
     column Style.mainColumn
         [ el [ Font.size 24, Font.bold ] (text "Sign in")
-        , inputEmail model
-        , inputPassword model
-        , signInButton
+        , showIf (model.state /= SignedIn) (inputUsername model)
+        , showIf (model.state /= SignedIn) (inputEmail model)
+        , showIf (model.state /= SignedIn) (inputPassword model)
+        , row [ spacing 12 ] [ signInOrCancelButton model, registerButton model ]
         , el [ Font.size 18 ] (text model.message)
         , footer sharedState model
         ]
@@ -90,6 +114,14 @@ footer sharedState model =
         ]
 
 
+showIf : Bool -> Element Msg -> Element Msg
+showIf flag element =
+    if flag then
+        element
+    else
+        Element.none
+
+
 inputEmail model =
     Input.text [ width (px 300) ]
         { onChange = AcceptEmail
@@ -97,6 +129,20 @@ inputEmail model =
         , placeholder = Nothing
         , label = Input.labelLeft [ moveDown 12, Font.bold, width (px 120) ] (text "Email")
         }
+
+
+inputUsername model =
+    case model.state of
+        Registering ->
+            Input.text [ width (px 300) ]
+                { onChange = AcceptUsername
+                , text = model.username
+                , placeholder = Nothing
+                , label = Input.labelLeft [ moveDown 12, Font.bold, width (px 120) ] (text "Username")
+                }
+
+        _ ->
+            Element.none
 
 
 inputPassword model =
@@ -109,10 +155,68 @@ inputPassword model =
         }
 
 
+signInOrCancelButton model =
+    case model.state of
+        NotSignedIn ->
+            signInButton
+
+        SigningIn ->
+            signInButton
+
+        Registering ->
+            cancelRegistrationButton
+
+        SignedIn ->
+            signOutButton
+
+
 signInButton =
     Input.button Style.button
         { onPress = Just SignIn
         , label = el [] (text "Sign In")
+        }
+
+
+signOutButton =
+    Input.button Style.button
+        { onPress = Just SignOut
+        , label = el [] (text "Sign Out")
+        }
+
+
+cancelRegistrationButton =
+    Input.button Style.button
+        { onPress = Just CancelRegistration
+        , label = el [] (text "Cancel")
+        }
+
+
+registerButton model =
+    case model.state of
+        NotSignedIn ->
+            registerButton_
+
+        SigningIn ->
+            Element.none
+
+        Registering ->
+            submitRegistrationButton
+
+        SignedIn ->
+            Element.none
+
+
+registerButton_ =
+    Input.button Style.button
+        { onPress = Just Register
+        , label = el [] (text "Register")
+        }
+
+
+submitRegistrationButton =
+    Input.button Style.button
+        { onPress = Just SubmitRegistration
+        , label = el [] (text "Submit registration")
         }
 
 

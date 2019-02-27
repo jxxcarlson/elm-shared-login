@@ -1,4 +1,4 @@
-module User.Session exposing (authenticate)
+module User.Session exposing (authenticate, registerUser)
 
 import Http
 import Json.Decode as Decode exposing (Decoder)
@@ -18,6 +18,15 @@ authenticate email password =
         }
 
 
+registerUser : String -> String -> String -> Cmd Msg
+registerUser username email password =
+    Http.post
+        { url = Configuration.backend ++ "/api/users/"
+        , body = Http.jsonBody (registrationEncoder username email password)
+        , expect = Http.expectJson AcceptRegistration userDecoder
+        }
+
+
 
 --
 -- ENCODERS AND DECODERS
@@ -28,6 +37,21 @@ authorizationEncoder : String -> String -> Encode.Value
 authorizationEncoder email password =
     Encode.object
         [ ( "email", Encode.string email )
+        , ( "password", Encode.string password )
+        ]
+
+
+registrationEncoder : String -> String -> String -> Encode.Value
+registrationEncoder username email password =
+    Encode.object [ ( "user", preRegistrationEncoder username email password ) ]
+
+
+preRegistrationEncoder : String -> String -> String -> Encode.Value
+preRegistrationEncoder username email password =
+    Encode.object
+        [ ( "username", Encode.string username )
+        , ( "firstname", Encode.string "Anon" )
+        , ( "email", Encode.string email )
         , ( "password", Encode.string password )
         ]
 
