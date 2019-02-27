@@ -2,7 +2,7 @@
 
 This app is derived Ohanhi's [Shared State Demo](https://github.com/ohanhi/elm-shared-state).  In this example, when the user signs in sign in, his successful sign-in informatiom, e.g. a sesssion token, is stored the parent, shared state, and so is resistant to tamperign.
 
-The app's functionality is deliberately restricted, so that it can, if desired, sere as a templaste for others.  I do plan to put registration functions in the sign-in page, but that is about it.
+The app's functionality is deliberately restricted, so that it can, if desired, serve as a templaste for others.
 
 ## Theory
 
