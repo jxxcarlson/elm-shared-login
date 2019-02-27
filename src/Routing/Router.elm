@@ -124,7 +124,7 @@ view msgMapper sharedState model =
         body_ =
             column [ padding 40 ]
                 [ el [ paddingXY 0 20, Font.bold ]
-                    (text "Shared State Demo")
+                    (text "Shared Login Demo")
                 , row
                     [ spacing 24 ]
                     [ Input.button (Style.activeButton (model.route == HomeRoute))
