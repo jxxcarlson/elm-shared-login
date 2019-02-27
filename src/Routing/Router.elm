@@ -125,7 +125,7 @@ view msgMapper sharedState model =
         body_ =
             column [ padding 40 ]
                 [ el [ paddingXY 0 20, Font.bold ]
-                    (text "Shared Login Demo")
+                    (text "Login Demo with Shared State")
                 , row
                     Style.navBar
                     [ Input.button (Style.activeButton (model.route == HomeRoute))
