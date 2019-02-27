@@ -5,6 +5,7 @@ module Common.Style
         , noAutocapitalize
         , noAutocorrect
         , preWrap
+        , navBar
         )
 
 import Element exposing (..)
@@ -17,7 +18,7 @@ import Html.Attributes
 
 button : List (Element.Attr () msg)
 button =
-    [ Background.color black, Font.color grey, Element.paddingXY 10 6 ] ++ basicButtonsStyle
+    [ Background.color black, Font.color white, Element.paddingXY 10 6 ] ++ basicButtonsStyle
 
 
 activeButton : Bool -> List (Element.Attr () msg)
@@ -28,6 +29,10 @@ activeButton active =
 
         False ->
             button
+
+
+navBar =
+    [ spacing 24, Background.color grey, paddingXY 12 8 ]
 
 
 noAutocapitalize =
@@ -67,7 +72,7 @@ basicButtonsStyle =
 
 activeButtonStyle : List (Element.Attr () msg)
 activeButtonStyle =
-    [ Background.color blue, Font.color grey, Element.paddingXY 10 6 ] ++ basicButtonsStyle
+    [ Background.color darkRed, Font.color white, Element.paddingXY 10 6 ] ++ basicButtonsStyle
 
 
 
@@ -77,7 +82,15 @@ activeButtonStyle =
 
 
 grey =
-    Element.rgb 0.8588 0.8549 0.8392
+    let
+        g =
+            0.7
+    in
+        Element.rgb g g g
+
+
+darkRed =
+    Element.rgb 0.5 0.0 0.0
 
 
 white =

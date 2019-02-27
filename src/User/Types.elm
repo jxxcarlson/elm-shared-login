@@ -21,6 +21,7 @@ type alias User =
 
 type Msg
     = ProcessAuthentication (Result Http.Error User)
-    | SetFavorite String
-    | SetSecret String
     | NavigateTo Route
+    | AcceptEmail String
+    | AcceptPassword String
+    | SignIn

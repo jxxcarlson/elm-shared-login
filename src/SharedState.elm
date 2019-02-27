@@ -2,26 +2,27 @@ module SharedState exposing (SharedState, SharedStateUpdate(..), initialSharedSt
 
 import Browser.Navigation
 import Time exposing (Posix)
+import User.Types exposing (User)
 
 
 type alias SharedState =
     { navKey : Browser.Navigation.Key
     , currentTime : Posix
-    , secret : String
+    , currentUser : Maybe User
     }
 
 
 type SharedStateUpdate
     = NoUpdate
     | UpdateTime Posix
-    | UpdateSharedSecret String
+    | UpdateCurrentUser (Maybe User)
 
 
 initialSharedState : Browser.Navigation.Key -> Posix -> SharedState
 initialSharedState navKey time =
     { navKey = navKey
     , currentTime = time
-    , secret = "xxx"
+    , currentUser = Nothing
     }
 
 
@@ -31,8 +32,8 @@ update sharedState sharedStateUpdate =
         UpdateTime time ->
             { sharedState | currentTime = time }
 
-        UpdateSharedSecret str ->
-            { sharedState | secret = str }
+        UpdateCurrentUser currentUser ->
+            { sharedState | currentUser = currentUser }
 
         NoUpdate ->
             sharedState

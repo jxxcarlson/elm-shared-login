@@ -11,6 +11,7 @@ import Html exposing (Html)
 import Element exposing (..)
 import Element.Font as Font
 import Element.Input as Input
+import Element.Background as Background
 import Common.Style as Style
 import User.Types
 
@@ -126,14 +127,14 @@ view msgMapper sharedState model =
                 [ el [ paddingXY 0 20, Font.bold ]
                     (text "Shared Login Demo")
                 , row
-                    [ spacing 24 ]
+                    Style.navBar
                     [ Input.button (Style.activeButton (model.route == HomeRoute))
                         { onPress = Just (NavigateTo HomeRoute)
                         , label = el [] (text "Home")
                         }
                     , Input.button (Style.activeButton (model.route == SettingsRoute))
                         { onPress = Just (NavigateTo SettingsRoute)
-                        , label = el [] (text "CurrentUser")
+                        , label = el [] (text "Sign in page")
                         }
                     ]
                 , pageView sharedState model

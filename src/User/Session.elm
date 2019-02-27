@@ -1,4 +1,4 @@
-module User.Authentication exposing (..)
+module User.Session exposing (authenticate)
 
 import Http
 import Json.Decode as Decode exposing (Decoder)

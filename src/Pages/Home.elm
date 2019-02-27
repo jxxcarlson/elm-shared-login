@@ -14,6 +14,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Common.Style as Style
 import Common.Utility as Utility
+import User.Types exposing (User)
 
 
 type alias Model =
@@ -35,7 +36,7 @@ init =
 
 {-| NOTE that the Home udpdate function is of the usual
 kind -- there is no SharedState parameter. Contrast
-this with the update function for Settings.
+this with the update function for SettiÂngs.
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -56,6 +57,22 @@ view sharedState model =
             { onPress = Just (IncrementCounter)
             , label = el [] (text "Increment counter")
             }
+        , userStatus sharedState.currentUser
         , el [ Font.size 16 ] (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
-        , el [ Font.size 16 ] (text <| "Secret = " ++ sharedState.secret)
         ]
+
+
+
+--
+-- HELPERS
+--
+
+
+userStatus : Maybe User -> Element msg
+userStatus user_ =
+    case user_ of
+        Nothing ->
+            el [] (text "Not signed in.")
+
+        Just user ->
+            el [] (text <| user.username ++ ", you are now signed in.")
