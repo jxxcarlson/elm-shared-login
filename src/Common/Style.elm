@@ -5,6 +5,9 @@ module Common.Style
         , noAutocapitalize
         , noAutocorrect
         , preWrap
+        , mainColumn
+        , footer
+        , footerItem
         , navBar
         )
 
@@ -31,8 +34,20 @@ activeButton active =
             button
 
 
+mainColumn =
+    [ paddingXY 0 40, spacing 24, height (px 700) ]
+
+
 navBar =
     [ spacing 24, Background.color grey, paddingXY 12 8 ]
+
+
+footer =
+    [ spacing 24, Background.color charcoal, paddingXY 12 8, alignBottom, width fill ]
+
+
+footerItem =
+    [ Font.color white ]
 
 
 noAutocapitalize =
@@ -79,6 +94,10 @@ activeButtonStyle =
 --
 -- COLORS
 --
+
+
+charcoal =
+    Element.rgb 0.4 0.4 0.4
 
 
 grey =

@@ -50,15 +50,22 @@ update msg model =
 
 view : SharedState -> Model -> Element Msg
 view sharedState model =
-    column [ paddingXY 0 40, spacing 18 ]
+    column Style.mainColumn
         [ el [ Font.size 24, Font.bold ] (text "Home page")
         , el [ Font.size 16 ] (text <| "Counter = " ++ String.fromInt model.counter)
         , Input.button Style.button
             { onPress = Just (IncrementCounter)
             , label = el [] (text "Increment counter")
             }
-        , userStatus sharedState.currentUser
-        , el [ Font.size 16 ] (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
+        , footer sharedState model
+        ]
+
+
+footer : SharedState -> Model -> Element Msg
+footer sharedState model =
+    row Style.footer
+        [ el Style.footerItem (text <| userStatus sharedState.currentUser)
+        , el Style.footerItem (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
         ]
 
 
@@ -68,11 +75,11 @@ view sharedState model =
 --
 
 
-userStatus : Maybe User -> Element msg
+userStatus : Maybe User -> String
 userStatus user_ =
     case user_ of
         Nothing ->
-            el [] (text "Not signed in.")
+            "Not signed in."
 
         Just user ->
-            el [] (text <| user.username ++ ", you are now signed in.")
+            "Signed is as " ++ user.username

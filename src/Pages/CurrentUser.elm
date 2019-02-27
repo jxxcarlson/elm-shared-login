@@ -24,14 +24,23 @@ type alias Model =
     { message : String
     , email : String
     , password : String
+    , state : State
     }
+
+
+type State
+    = NotSignedIn
+    | SigningIn
+    | Registering
+    | SignedIn
 
 
 initModel : Model
 initModel =
-    { message = "Ready"
+    { message = ""
     , email = ""
     , password = ""
+    , state = NotSignedIn
     }
 
 
@@ -49,13 +58,13 @@ update sharedState msg model =
             ( { model | password = str }, Cmd.none, NoUpdate )
 
         SignIn ->
-            ( model, Session.authenticate model.email model.password, NoUpdate )
+            ( { model | message = "" }, Session.authenticate model.email model.password, NoUpdate )
 
         ProcessAuthentication (Ok user) ->
-            ( { model | message = "Login successful" }, Cmd.none, UpdateCurrentUser (Just user) )
+            ( { model | message = "Login successful", state = SignedIn }, Cmd.none, UpdateCurrentUser (Just user) )
 
         ProcessAuthentication (Err err) ->
-            ( { model | message = "Invalid password or username" }, Cmd.none, UpdateCurrentUser Nothing )
+            ( { model | message = "Invalid password or username", state = SigningIn }, Cmd.none, UpdateCurrentUser Nothing )
 
         NavigateTo route ->
             ( model, pushUrl sharedState.navKey (reverseRoute route), NoUpdate )
@@ -63,13 +72,21 @@ update sharedState msg model =
 
 view : SharedState -> Model -> Element Msg
 view sharedState model =
-    column [ paddingXY 0 40, spacing 24 ]
+    column Style.mainColumn
         [ el [ Font.size 24, Font.bold ] (text "Sign in")
         , inputEmail model
         , inputPassword model
         , signInButton
         , el [ Font.size 18 ] (text model.message)
-        , currentSharedStateView sharedState
+        , footer sharedState model
+        ]
+
+
+footer : SharedState -> Model -> Element Msg
+footer sharedState model =
+    row Style.footer
+        [ el Style.footerItem (text <| stateAsString model.state)
+        , el Style.footerItem (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
         ]
 
 
@@ -102,9 +119,30 @@ signInButton =
 currentSharedStateView : SharedState -> Element never
 currentSharedStateView sharedState =
     column [ paddingXY 0 20, spacing 24 ]
-        [ userStatus sharedState.currentUser
-        , el [ Font.size 16 ] (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
+        [ el [ Font.size 16 ] (text <| "UTC: " ++ Utility.toUtcString (Just sharedState.currentTime))
         ]
+
+
+
+--
+-- HELPERS
+--
+
+
+stateAsString : State -> String
+stateAsString state =
+    case state of
+        NotSignedIn ->
+            "Not signed in"
+
+        SignedIn ->
+            "Signed in"
+
+        SigningIn ->
+            "Signing in"
+
+        Registering ->
+            "Registering"
 
 
 userStatus : Maybe User -> Element msg
